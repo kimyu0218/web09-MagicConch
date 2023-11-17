@@ -34,7 +34,7 @@ jobs:
         port: ${{ secrets.SSH_PORT }}
         script: |
           cd ~/web09-MagicConch/ && git pull origin dev
-					docker-compose -f ~/web09-MagicConch/docker-compose.yml up -d
+          docker-compose -f ~/web09-MagicConch/docker-compose.yml up -d
 
     - name: Install and Reload NGINX on the server
       uses: appleboy/ssh-action@master
@@ -45,10 +45,10 @@ jobs:
         port: ${{ secrets.SSH_PORT }}
         script: |
           sudo apt-get update
-					sudo apt-get install -y nginx
-					sudo systemctl start nginx
-					sudo systemctl enable nginx
-					sudo systemctl reload nginx
+          sudo apt-get install -y nginx
+          sudo systemctl start nginx
+          sudo systemctl enable nginx
+          sudo systemctl reload nginx
 
     - name: Notify deployment success
       if: success()
