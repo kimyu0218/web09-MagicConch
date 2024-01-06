@@ -2,8 +2,8 @@ name: Blue/Green CD
 
 on:
   push:
-    paths: ["backend/**"]
-    branches: ["dev"]
+    #paths: ["backend/**"]
+    branches: ["dev", "BE/refactor/#454-AWS-마이그레이션"]
 
 env:
   DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
@@ -50,6 +50,19 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+
+      - name: Get the most recent Docker Hub tag
+        id: get-latest-tag
+        run: |
+          latest_tag=$(curl -s "https://registry.hub.docker.com/v2/repositories/${{ secrets.DOCKER_USERNAME }}/magicconch/tags" | jq -r '.results | map(select(.name | startswith("was"))) | .[0].name' | cut -d'-' -f3)
+          echo "LATEST_DOCKER_TAG=$latest_tag" >> $GITHUB_ENV
+
+      - name: Pull Docker Images
+        run: |
+          docker pull ${{ secrets.DOCKER_USERNAME }}/magicconch:was-blue-${{ env.LATEST_DOCKER_TAG }}
+          docker pull ${{ secrets.DOCKER_USERNAME }}/magicconch:signal-blue-${{ env.LATEST_DOCKER_TAG }}
+          docker pull ${{ secrets.DOCKER_USERNAME }}/magicconch:was-green-${{ env.LATEST_DOCKER_TAG }}
+          docker pull ${{ secrets.DOCKER_USERNAME }}/magicconch:signal-green-${{ env.LATEST_DOCKER_TAG }}
 
       - name: Build & Push Docker Images (Blue & Green)
         run: |
