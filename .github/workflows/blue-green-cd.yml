@@ -67,8 +67,9 @@ jobs:
       - name: Build & Push Docker Images (Blue & Green)
         run: |
           cd backend
-          docker-compose -f compose.blue-build.yml build
-          docker-compose -f compose.green-build.yml build
+          docker images
+          docker-compose -f compose.blue-build.yml build --progress plain
+          docker-compose -f compose.green-build.yml build --progress plain
           docker-compose -f compose.blue-build.yml push
           docker-compose -f compose.green-build.yml push
 
