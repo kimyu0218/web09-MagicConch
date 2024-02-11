@@ -64,6 +64,8 @@ jobs:
       - name: Build & Push Docker Images (Blue & Green)
         run: |
           cd backend
+          docker-compose -f compose.cache-export.yml build --builder buildx --build-arg BUILDKIT_INLINE_CACHE=1
+          docker-compose -f compose.cache-export.yml push
           docker-compose -f compose.blue-build.yml build --builder buildx --build-arg BUILDKIT_INLINE_CACHE=1
           docker-compose -f compose.green-build.yml build --builder buildx --build-arg BUILDKIT_INLINE_CACHE=1
           docker-compose -f compose.blue-build.yml push
